@@ -1,0 +1,21 @@
+package ru.kata.spring.boot_security.demo.service;
+
+
+import org.springframework.security.core.userdetails.UserDetailsService;
+import ru.kata.spring.boot_security.demo.models.User;
+
+import java.util.List;
+
+public interface UserService {
+
+    User getUser(long id);
+
+    boolean save(User user);
+
+    void update(User user);
+
+    void delete(long id);
+
+    List<User> getListOfUsers();
+
+}
