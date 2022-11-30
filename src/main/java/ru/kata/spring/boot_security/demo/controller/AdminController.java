@@ -41,15 +41,12 @@ public class AdminController {
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") long id) {
-        System.out.println("edit");
         model.addAttribute("user", userService.getUser(id));
-        System.out.println("&&&");
         return "edit";
     }
 
     @PatchMapping("/{id}")
     public String update(@ModelAttribute("user") User user) {
-        System.out.println("112312132113");
         userService.update(user);
         return "redirect:/admin";
     }

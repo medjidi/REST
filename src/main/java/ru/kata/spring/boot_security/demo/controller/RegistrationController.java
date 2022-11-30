@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
@@ -57,5 +58,27 @@ public class RegistrationController {
 
         return "redirect:/login";
     }
+    @GetMapping("/roles")
+    public String RolesCreater() {
+        return "roles";
+    }
+    @GetMapping("/roles/user")
+    public String CreatUserRole(Model model) {
+        userService.save(new Role("ROLE_USER"));
+        return "roles";
+    }
+    @GetMapping("/roles/admin")
+    public String CreatAdminRole(Model model) {
+        Role role = new Role("ROLE_ADMIN");
+        userService.save(role);
+        if (!userService.contains("admin")){
+            User user = new User("admin", "admin");
+            userService.save(user, role);
+        }
+
+        return "roles";
+    }
+
+
 }
 

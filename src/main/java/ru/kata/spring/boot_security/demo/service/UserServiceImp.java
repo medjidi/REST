@@ -8,8 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.Repository.RoleRepository;
-import ru.kata.spring.boot_security.demo.Repository.UserRepository;
+import ru.kata.spring.boot_security.demo.repository.RoleRepository;
+import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 
@@ -43,7 +43,7 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Transactional
     @Override
     public boolean save(User user) {
-        if (userRepository.findByUsername(user.getUsername())!=null) {
+        if (!userRepository.findByUsername(user.getUsername()).isEmpty()) {
             return false;
         }
         Role role = roleRepository.findByName("ROLE_USER").get();
@@ -72,6 +72,29 @@ public class UserServiceImp implements UserService, UserDetailsService {
         return userRepository.findAll();
     }
 
+    @Transactional
+    @Override
+    public void save(Role role) {
+        if (roleRepository.findByName(role.getName()).isEmpty()) {
+            roleRepository.save(role);
+        } else{
+            role = roleRepository.findByName(role.getName()).get();
+        }
+    }
+
+    @Override
+    public void save(User user, Role role) {
+        Role role1 = roleRepository.findByName(role.getName()).get();
+        user.setRoles(Collections.singleton(role1));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    public boolean contains(String username) {
+        return !userRepository.findByUsername(username).isEmpty();
+    }
+
 
     @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
     @Override
@@ -85,4 +108,6 @@ public class UserServiceImp implements UserService, UserDetailsService {
         }
         return user.get();
     }
+
+
 }
