@@ -19,9 +19,15 @@ public class User implements UserDetails {
     private Long id;
 
     @Size(min=4, message = "Не меньше 4 знаков")
-    private String username;
-    @Size(min=4, message = "Не меньше 4 знаков")
+    private String email;
+
     private String password;
+
+    private String firstName;
+
+    private String lastName;
+
+    private Byte age;
 
     @Transient
     private String confirm;
@@ -32,8 +38,8 @@ public class User implements UserDetails {
     }
 
 
-    public User(String username, String password) {
-        this.username = username;
+    public User(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
@@ -42,8 +48,8 @@ public class User implements UserDetails {
         return roles;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String username) {
+        this.email = username;
     }
 
     public String getPassword() {
@@ -52,7 +58,35 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Byte getAge() {
+        return age;
+    }
+
+    public void setAge(Byte age) {
+        this.age = age;
     }
 
     @Override

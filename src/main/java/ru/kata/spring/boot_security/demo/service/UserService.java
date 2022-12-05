@@ -25,4 +25,6 @@ public interface UserService {
 
     boolean contains(String username);
 
+    List<Role> getAllRoles();
+
 }

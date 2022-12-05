@@ -43,11 +43,9 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Transactional
     @Override
     public boolean save(User user) {
-        if (!userRepository.findByUsername(user.getUsername()).isEmpty()) {
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             return false;
         }
-        Role role = roleRepository.findByName("ROLE_USER").get();
-        user.setRoles(Collections.singleton(role));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return true;
@@ -56,7 +54,13 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Transactional
     @Override
     public void update(User user) {
-        user.setRoles(userRepository.findById(user.getId()).get().getRoles());
+        String pass = user.getPassword();
+        if (pass.isEmpty()){
+            user.setPassword(userRepository.findById(user.getId()).get().getPassword());
+        }
+        else{
+            user.setPassword(bCryptPasswordEncoder.encode(pass));
+        }
         userRepository.save(user);
     }
 
@@ -92,14 +96,19 @@ public class UserServiceImp implements UserService, UserDetailsService {
 
     @Override
     public boolean contains(String username) {
-        return !userRepository.findByUsername(username).isEmpty();
+        return !userRepository.findByEmail(username).isEmpty();
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 
 
     @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findByEmail(username);
         for (Role role: user.get().getRoles()){
             System.out.println(role.getName());
         }
@@ -108,6 +117,7 @@ public class UserServiceImp implements UserService, UserDetailsService {
         }
         return user.get();
     }
+
 
 
 }

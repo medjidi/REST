@@ -1,8 +1,11 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import org.hibernate.mapping.Collection;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -46,7 +49,8 @@ public class Role implements GrantedAuthority  {
     }
 
     public String getName() {
-        return name;
+
+        return name.split("_")[1];
     }
 
     public void setName(String name) {
@@ -68,8 +72,9 @@ public class Role implements GrantedAuthority  {
 
     @Override
     public String toString() {
-        return "Role{" +
-                "name='" + name + '\'' +
-                '}';
+        return name.split("_")[1];
+    }
+    public Set<Role> getSingleton(){
+        return Collections.singleton(new Role(name));
     }
 }

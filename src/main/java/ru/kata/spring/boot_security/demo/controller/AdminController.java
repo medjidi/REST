@@ -1,12 +1,18 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
+
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
@@ -22,6 +28,16 @@ public class AdminController {
     @GetMapping()
     public String printAllUsers(ModelMap model) {
         model.addAttribute("list", userService.getListOfUsers());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User admin = (User) authentication.getPrincipal();
+        User user = new User();
+        model.addAttribute("admin", admin);
+        model.addAttribute("user1", user);
+        List<Role> roles = userService.getAllRoles();
+        for (Role r : roles){
+            System.out.println(r.getAuthority());
+        }
+        model.addAttribute("roles", roles);
         return "users";
     }
 

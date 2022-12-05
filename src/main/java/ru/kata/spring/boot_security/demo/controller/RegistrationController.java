@@ -26,7 +26,7 @@ public class RegistrationController {
 
     @GetMapping(value = "/")
     public String printWelcome() {
-        return "index";
+        return "redirect:/login";
     }
 
     @GetMapping("/registration")
