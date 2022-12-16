@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +19,6 @@ import javax.validation.Valid;
 public class RegistrationController {
 
     private final UserService userService;
-
     @Autowired
     public RegistrationController(UserService userService) {
         this.userService = userService;
@@ -43,10 +43,10 @@ public class RegistrationController {
         }
         System.out.println("1");
 
-        if (!userForm.getPassword().equals(userForm.getConfirm())) {
-            model.addAttribute("passwordError", "Пароли не совпадают");
-            return "registration";
-        }
+//        if (!userForm.getPassword().equals(userForm.getConfirm())) {
+//            model.addAttribute("passwordError", "Пароли не совпадают");
+//            return "registration";
+//        }
         System.out.println("12");
 
         if (!userService.save(userForm)) {

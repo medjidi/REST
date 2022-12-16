@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +48,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static BCryptPasswordEncoder bcryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public static ModelMapper modelMapper(){return new ModelMapper();}
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

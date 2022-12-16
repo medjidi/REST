@@ -1,77 +1,101 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+import ru.kata.spring.boot_security.demo.dto.RoleDTO;
+import ru.kata.spring.boot_security.demo.dto.UserDTO;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Controller
+@RestController
 @RequestMapping("/admin")
 public class AdminController {
 
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public AdminController(UserService userService) {
+    public AdminController(UserService userService, ModelMapper modelMapper) {
         this.userService = userService;
+        this.modelMapper = modelMapper;
+    }
+
+    @GetMapping("/users")
+    public ModelAndView getPage() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("users.html");
+        return modelAndView;
     }
 
     @GetMapping()
-    public String printAllUsers(ModelMap model) {
-        model.addAttribute("list", userService.getListOfUsers());
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> printAllUsers() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User admin = (User) authentication.getPrincipal();
-        User user = new User();
-        model.addAttribute("admin", admin);
-        model.addAttribute("user1", user);
+        UserDTO admin = convertToDTO((User) authentication.getPrincipal());
         List<Role> roles = userService.getAllRoles();
-        for (Role r : roles){
+        for (Role r : roles) {
             System.out.println(r.getAuthority());
         }
-        model.addAttribute("roles", roles);
-        return "users";
+        List<UserDTO> users = userService.getListOfUsers().stream()
+                .map(this::convertToDTO).collect(Collectors.toList());
+
+        User user = new User();
+        return Pair.of(Pair.of(admin, user), Pair.of(users, roles));
     }
-
-
-
-    @GetMapping("/new")
-    public String newUser(Model model) {
-        model.addAttribute("user", new User());
-        return "creater";
-    }
+//    @GetMapping()
+//    public List<UserDTO> printAllUsers() {
+//        List<UserDTO> users = userService.getListOfUsers().stream()
+//                .map(this::convertToDTO).collect(Collectors.toList());
+//        for (UserDTO user : users) {
+//            System.out.println(user);
+//        }
+//        return users;
+//    }
 
     @PostMapping()
-    public String creat(@ModelAttribute("user") User user) {
-        userService.save(user);
-        return "redirect:/admin";
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> creat(@RequestBody User userDTO) {
+        userService.save(userDTO);
+        return printAllUsers();
     }
 
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") long id) {
-        model.addAttribute("user", userService.getUser(id));
-        return "edit";
-    }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user) {
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> update(@RequestBody User user) {
         userService.update(user);
-        return "redirect:/admin";
+        return printAllUsers();
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") long id) {
+    public Pair<Pair<UserDTO, User>, Pair<List<UserDTO>, List<Role>>> delete(@PathVariable("id") long id) {
         userService.delete(id);
-        return "redirect:/admin";
+        return printAllUsers();
     }
 
+    private User convertToUser(UserDTO userDTO) {
+        return modelMapper.map(userDTO, User.class);
+    }
+
+    private UserDTO convertToDTO(User user) {
+        return modelMapper.map(user, UserDTO.class);
+    }
+
+    private RoleDTO convertToDTO(Role role) {
+        return modelMapper.map(role, RoleDTO.class);
+    }
 
 }

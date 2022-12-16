@@ -75,6 +75,11 @@ public class UserServiceImp implements UserService, UserDetailsService {
     public List<User> getListOfUsers() {
         return userRepository.findAll();
     }
+    @Transactional(readOnly = true)
+    @Override
+    public Role getRoleById(Long id) {
+        return roleRepository.getReferenceById(id);
+    }
 
     @Transactional
     @Override

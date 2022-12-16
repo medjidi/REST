@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,6 +12,7 @@ import java.util.Set;
 
 @Table(name = "users")
 @Entity
+@JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@userId")
 public class User implements UserDetails {
 
 
@@ -29,9 +32,8 @@ public class User implements UserDetails {
 
     private Byte age;
 
-    @Transient
-    private String confirm;
     @ManyToMany(fetch = FetchType.LAZY)
+
     private Set<Role> roles;
 
     public User() {
@@ -104,14 +106,6 @@ public class User implements UserDetails {
         return true;
     }
 
-    public String getConfirm() {
-        return confirm;
-    }
-
-    public void setConfirm(String confirm) {
-        this.confirm = confirm;
-    }
-
     @Override
     public boolean isEnabled() {
         return true;
@@ -130,6 +124,7 @@ public class User implements UserDetails {
     }
 
 
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -138,4 +133,15 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                ", roles=" + roles +
+                '}';
+    }
 }

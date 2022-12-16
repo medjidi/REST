@@ -19,6 +19,8 @@ public interface UserService {
 
     List<User> getListOfUsers();
 
+    Role getRoleById(Long id);
+
     void save(Role role);
 
     void save(User user, Role role);
