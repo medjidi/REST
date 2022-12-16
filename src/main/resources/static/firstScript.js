@@ -21,7 +21,8 @@ const renderPosts = (data) => {
     let coll = '';
     let rolesA = '';
     console.log(data);
-    let admin = data.first.first;
+    let admin = data.admin;
+
     coll += `<div>
             <span class="nav-text text-navb probel">${admin.email}</span>
             <span class="nav-text probel">with roles:</span>`;
@@ -31,14 +32,13 @@ const renderPosts = (data) => {
     })
     coll += `</div>`;
     collapse.innerHTML = coll;
-    let user1 = data.first.second;
-    roles = data.second.second;
+    roles = data.roles;
     roles.forEach(role => {
         rolesA += `<option value="${role.id}">${role.name}
                      </option>`;
     });
     listOfRoles.innerHTML = rolesA;
-    data.second.first.forEach(post => {
+    data.users.forEach(post => {
         table += `<tr data-id="${post.id}">
             <td> ${post.id}</td>
             <td> ${post.firstName}</td>
@@ -188,9 +188,6 @@ postList.addEventListener('click', (e) => {
             .then(data => renderPosts(data))
 
     } else if (editButtonPressed) {
-        // let elementsFromForm = document.getElementById('formof'+userid);
-        // console.log(elementsFromForm.elements);
-        // console.log('formof'+userid);
 
         const firstNameEdit = document.getElementById(`firstNameEdit${userid}`);
         const lastNameEdit = document.getElementById(`lastNameEdit${userid}`);
@@ -256,12 +253,7 @@ creatUser.addEventListener('submit', (e) => {
             }
         }
     }
-    //
-    // const data = new FormData(creatUser)
-    // var request = new XMLHttpRequest();
-    // request.open("POST", url);
-    // request.send(data);
-    // console.log(data);
+
     let strs = [];
     for (const option of rolesUser.selectedOptions) {
         console.log(option);
@@ -270,7 +262,6 @@ creatUser.addEventListener('submit', (e) => {
             name: getrole(option.value)
         });
     }
-    //
     console.log('Строки: ' + strs);
     const d = {
         firstName: firstName.value,

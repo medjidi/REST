@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImp implements UserService, UserDetailsService {
+public class UserServiceImp implements UserService, UserDetailsService{
 
     private final UserRepository userRepository;
 
@@ -109,20 +109,14 @@ public class UserServiceImp implements UserService, UserDetailsService {
         return roleRepository.findAll();
     }
 
-
-    @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = userRepository.findByEmail(username);
-        for (Role role: user.get().getRoles()){
-            System.out.println(role.getName());
-        }
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(username);
         }
         return user.get();
     }
-
-
 
 }

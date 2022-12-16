@@ -37,24 +37,15 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(@ModelAttribute("userForm") @Valid User userForm, BindingResult bindingResult, Model model) {
-        System.out.println("1");
         if (bindingResult.hasErrors()) {
             return "registration";
         }
-        System.out.println("1");
 
-//        if (!userForm.getPassword().equals(userForm.getConfirm())) {
-//            model.addAttribute("passwordError", "Пароли не совпадают");
-//            return "registration";
-//        }
-        System.out.println("12");
 
         if (!userService.save(userForm)) {
-            System.out.println("2");
             model.addAttribute("usernameError", "Пользователь с таким именем уже существует");
             return "registration";
         }
-        System.out.println("13");
 
         return "redirect:/login";
     }
